@@ -55,6 +55,7 @@ class MyThemes {
             borderRadius: BorderRadius.circular(0.0),
           ),
         ),
+        elevation: MaterialStateProperty.all(0),
         shadowColor: MaterialStateProperty.all(Colors.white),
         overlayColor: MaterialStateProperty.all(
           Colors.grey.shade800.withOpacity(0.3),
@@ -99,6 +100,7 @@ class MyThemes {
         shape: MaterialStateProperty.all(
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(0.0)),
         ),
+        elevation: MaterialStateProperty.all(0),
         shadowColor: MaterialStateProperty.all(kPrimaryColor),
         overlayColor: MaterialStateProperty.all(
           Colors.black.withOpacity(0.2),

@@ -51,7 +51,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final _operations = ['+', '-', '*', '/'];
-
   List _results = ["0", "0", "0", "0"];
   String _currentResult = "";
   String _currentTimerToDisplay = "";
@@ -97,63 +96,65 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: _isGo
           ? Column(
+            mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        constraints: BoxConstraints(
-                          maxWidth: mq.size.width * 0.15,
-                          minWidth: mq.size.width * 0.15,
-                          minHeight: mq.size.width * 0.15,
-                          maxHeight: mq.size.width * 0.15,
-                        ),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Container(),
-                            if (_isTimerRunning)
-                              Text(
-                                _currentTimerToDisplay,
-                                textScaleFactor: 1,
-                                style: Theme.of(context).textTheme.subtitle1,
-                              ),
-                            if (_isTimerRunning)
-                              Transform(
-                                alignment: Alignment.center,
-                                transform: Matrix4.rotationY(3.14),
-                                child: CircularProgressIndicator(
-                                  value: _progress,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      themeUtils.themeMode == ThemeMode.dark
-                                          ? Colors.white
-                                          : kPrimaryColor),
+                if (_doRestart)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          constraints: BoxConstraints(
+                            maxWidth: mq.size.width * 0.15,
+                            minWidth: mq.size.width * 0.15,
+                            minHeight: mq.size.width * 0.15,
+                            maxHeight: mq.size.width * 0.15,
+                          ),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Container(),
+                              if (_isTimerRunning)
+                                Text(
+                                  _currentTimerToDisplay,
+                                  textScaleFactor: 1,
+                                  style: Theme.of(context).textTheme.subtitle1,
                                 ),
-                              ),
-                          ],
+                              if (_isTimerRunning)
+                                Transform(
+                                  alignment: Alignment.center,
+                                  transform: Matrix4.rotationY(3.14),
+                                  child: CircularProgressIndicator(
+                                    value: _progress,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        themeUtils.themeMode == ThemeMode.dark
+                                            ? Colors.white
+                                            : kPrimaryColor),
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        color: themeUtils.themeMode != ThemeMode.dark
-                            ? kPrimaryColor
-                            : Colors.white,
-                        child: Text(
-                          '$_firstNum $_operation $_secondNum',
-                          style: Theme.of(context).textTheme.headline6,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          color: themeUtils.themeMode != ThemeMode.dark
+                              ? kPrimaryColor
+                              : Colors.white,
+                          child: Text(
+                            '$_firstNum $_operation $_secondNum',
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        width: mq.size.width * 0.15,
-                        height: mq.size.width * 0.15,
-                      ),
-                    ],
+                        SizedBox(
+                          width: mq.size.width * 0.15,
+                          height: mq.size.width * 0.15,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
                 const SizedBox(height: 10),
                 Column(
                   children: [
@@ -175,40 +176,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         ],
                       ),
                     if (_doRestart) const SizedBox(height: 10),
-                    if (!_doRestart)
-                      Center(
-                        child: ElevatedButton(
-                            onPressed: () {
-                              setState(() => _doRestart = true);
-                              _generateQuestion();
-                              _correctAnswers = 0;
-                              _wrongAnswers = 0;
-                              Timer.periodic(
-                                const Duration(seconds: 1),
-                                (Timer t) {
-                                  if (mounted) {
-                                    _currentTimerToDisplay =
-                                        (_currentTimer < 10 ? "0" : "")
-                                                .toString() +
-                                            _currentTimer.toString() +
-                                            "s";
-                                    if (_currentTimer > 0) {
-                                      _currentTimer = _currentTimer - 1;
-                                      _progress =
-                                          (_currentTimer / 10).toDouble();
-                                    } else if (_currentTimer == 0) {
-                                      _isTimerRunning = false;
-                                      _doRestart = false;
-                                      t.cancel();
-                                    }
-                                    setState(() {});
-                                  }
-                                },
-                              );
-                              _generateQuestion();
-                            },
-                            child: const Text("Go")),
-                      ),
                     const SizedBox(height: 30),
                     Text(
                       _isTimerRunning
@@ -216,7 +183,57 @@ class _MyHomePageState extends State<MyHomePage> {
                           : "Correct Answers: $_correctAnswers\n\nWrong Answers: $_wrongAnswers",
                       textScaleFactor: 1,
                       style: Theme.of(context).textTheme.headline4,
-                    )
+                    ),
+                    if (!_doRestart) const SizedBox(height: 10),
+                    if (!_doRestart)
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              _doRestart = true;
+                              _results = ["0", "0", "0", "0"];
+                              _currentResult = "";
+                              _currentTimerToDisplay = "";
+                              _operation = '';
+                              _result = "";
+                              _isTimerRunning = true;
+                              _progress = 0.0;
+                              _currentTimer = 10;
+                              _firstNum = 0;
+                              _secondNum = 0;
+                              _correctAnswers = 0;
+                              _wrongAnswers = 0;
+                              _isGo = true;
+                              _doRestart = true;
+                            });
+                            _generateQuestion();
+                            _correctAnswers = 0;
+                            _wrongAnswers = 0;
+                            Timer.periodic(
+                              const Duration(seconds: 1),
+                              (Timer t) {
+                                if (mounted) {
+                                  _currentTimerToDisplay =
+                                      (_currentTimer < 10 ? "0" : "").toString() +
+                                          _currentTimer.toString() +
+                                          "s";
+                                  if (_currentTimer > 0) {
+                                    _currentTimer = _currentTimer - 1;
+                                    _progress = (_currentTimer / 10).toDouble();
+                                  } else if (_currentTimer == 0) {
+                                    _isTimerRunning = false;
+                                    _doRestart = false;
+                                    t.cancel();
+                                  }
+                                  setState(() {});
+                                }
+                              },
+                            );
+                            _generateQuestion();
+                          },
+                          child: const Text("Go"),
+                        ),
+                      ),
                   ],
                 ),
               ],
