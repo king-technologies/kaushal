@@ -11,18 +11,8 @@ import 'values/strings.dart';
 
 void main() => runApp(const MyApp());
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: _isGo
           ? Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 20),
                 if (_doRestart)
@@ -214,7 +204,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               (Timer t) {
                                 if (mounted) {
                                   _currentTimerToDisplay =
-                                      (_currentTimer < 10 ? "0" : "").toString() +
+                                      (_currentTimer < 10 ? "0" : "")
+                                              .toString() +
                                           _currentTimer.toString() +
                                           "s";
                                   if (_currentTimer > 0) {
