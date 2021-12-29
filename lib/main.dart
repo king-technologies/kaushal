@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:kaushal/values/colors.dart';
 import 'package:provider/provider.dart';
-
 import 'utils/shared_pref_util.dart';
 import 'utils/theme_util.dart';
 import 'values/strings.dart';
@@ -13,7 +11,6 @@ void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -34,28 +31,22 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
-
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final _operations = ['+', '-', '*', '/'];
   List _results = ["0", "0", "0", "0"];
-  String _currentResult = "";
-  String _currentTimerToDisplay = "";
-  String _operation = '';
-  String _result = "";
-  bool _isTimerRunning = true;
-  double _progress = 0.0;
+  double _progress = 100.0;
+  int _correctAnswers = 0;
+  int _wrongAnswers = 0;
   int _currentTimer = 10;
   num _firstNum = 0;
   num _secondNum = 0;
-  int _correctAnswers = 0;
-  int _wrongAnswers = 0;
-  bool _isGo = false;
-  bool _doRestart = true;
-
+  String _currentResult = "";
+  String _currentTimerToDisplay = "10s";
+  String _operation = "";
+  String _result = "";
   @override
   void initState() {
     super.initState();
@@ -84,12 +75,12 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: _isGo
+      body: _operation != ""
           ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 20),
-                if (_doRestart)
+                if (_currentTimer > 0)
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Row(
@@ -105,25 +96,22 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: Stack(
                             alignment: Alignment.center,
                             children: [
-                              Container(),
-                              if (_isTimerRunning)
-                                Text(
-                                  _currentTimerToDisplay,
-                                  textScaleFactor: 1,
-                                  style: Theme.of(context).textTheme.subtitle1,
+                              Text(
+                                _currentTimerToDisplay,
+                                textScaleFactor: 1,
+                                style: Theme.of(context).textTheme.subtitle1,
+                              ),
+                              Transform(
+                                alignment: Alignment.center,
+                                transform: Matrix4.rotationY(3.14),
+                                child: CircularProgressIndicator(
+                                  value: _progress,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      themeUtils.themeMode == ThemeMode.dark
+                                          ? Colors.white
+                                          : kPrimaryColor),
                                 ),
-                              if (_isTimerRunning)
-                                Transform(
-                                  alignment: Alignment.center,
-                                  transform: Matrix4.rotationY(3.14),
-                                  child: CircularProgressIndicator(
-                                    value: _progress,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                        themeUtils.themeMode == ThemeMode.dark
-                                            ? Colors.white
-                                            : kPrimaryColor),
-                                  ),
-                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -145,202 +133,246 @@ class _MyHomePageState extends State<MyHomePage> {
                       ],
                     ),
                   ),
-                const SizedBox(height: 10),
-                Column(
-                  children: [
-                    if (_doRestart)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _getButton(0),
-                          _getButton(1),
-                        ],
-                      ),
-                    if (_doRestart) const SizedBox(height: 10),
-                    if (_doRestart)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _getButton(2),
-                          _getButton(3),
-                        ],
-                      ),
-                    if (_doRestart) const SizedBox(height: 10),
-                    const SizedBox(height: 30),
-                    Text(
-                      _isTimerRunning
-                          ? _currentResult
-                          : "Correct Answers: $_correctAnswers\n\nWrong Answers: $_wrongAnswers",
-                      textScaleFactor: 1,
-                      style: Theme.of(context).textTheme.headline4,
-                    ),
-                    if (!_doRestart) const SizedBox(height: 10),
-                    if (!_doRestart)
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _doRestart = true;
-                              _results = ["0", "0", "0", "0"];
-                              _currentResult = "";
-                              _currentTimerToDisplay = "";
-                              _operation = '';
-                              _result = "";
-                              _isTimerRunning = true;
-                              _progress = 0.0;
-                              _currentTimer = 10;
-                              _firstNum = 0;
-                              _secondNum = 0;
-                              _correctAnswers = 0;
-                              _wrongAnswers = 0;
-                              _isGo = true;
-                              _doRestart = true;
-                            });
-                            _generateQuestion();
-                            _correctAnswers = 0;
-                            _wrongAnswers = 0;
-                            Timer.periodic(
-                              const Duration(seconds: 1),
-                              (Timer t) {
-                                if (mounted) {
-                                  _currentTimerToDisplay =
-                                      (_currentTimer < 10 ? "0" : "")
-                                              .toString() +
-                                          _currentTimer.toString() +
-                                          "s";
-                                  if (_currentTimer > 0) {
-                                    _currentTimer = _currentTimer - 1;
-                                    _progress = (_currentTimer / 10).toDouble();
-                                  } else if (_currentTimer == 0) {
-                                    _isTimerRunning = false;
-                                    _doRestart = false;
-                                    t.cancel();
-                                  }
-                                  setState(() {});
-                                }
-                              },
-                            );
-                            _generateQuestion();
-                          },
-                          child: const Text("Go"),
+                if (_currentTimer > 0)
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _getButton(0),
+                            _getButton(1),
+                          ],
                         ),
                       ),
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _getButton(2),
+                            _getButton(3),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.symmetric(vertical: 20),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Text(
+                          _currentTimer > 0
+                              ? _currentResult
+                              : "Correct Answers: $_correctAnswers\n\nWrong Answers: $_wrongAnswers",
+                          textScaleFactor: 1,
+                          style: Theme.of(context).textTheme.headline4,
+                        ),
+                        if (_currentTimer == 0)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () => setOperation("+"),
+                                  child: const Text("+", textScaleFactor: 2),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () => setOperation("-"),
+                                  child: const Text("-", textScaleFactor: 2),
+                                ),
+                              ],
+                            ),
+                          ),
+                        if (_currentTimer == 0)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () => setOperation("*"),
+                                child: const Text("x", textScaleFactor: 2),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => setOperation("/"),
+                                child: const Text("/", textScaleFactor: 2),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             )
-          : Center(
-              child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _isGo = true;
-                      _isTimerRunning = true;
-                    });
-                    _generateQuestion();
-                    Timer.periodic(
-                      const Duration(seconds: 1),
-                      (Timer t) {
-                        if (mounted) {
-                          _currentTimerToDisplay =
-                              (_currentTimer < 10 ? "0" : "").toString() +
-                                  _currentTimer.toString() +
-                                  "s";
-                          if (_currentTimer > 0) {
-                            _currentTimer = _currentTimer - 1;
-                            _progress = (_currentTimer / 10).toDouble();
-                          } else if (_currentTimer == 0) {
-                            _isTimerRunning = false;
-                            _doRestart = false;
-                            t.cancel();
-                          }
-                          setState(() {});
-                        }
-                      },
-                    );
-                    _generateQuestion();
-                  },
-                  child: const Text("Go")),
+          : SizedBox(
+              width: double.infinity,
+              height: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => setOperation("+"),
+                          child: const Text("+", textScaleFactor: 2),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => setOperation("-"),
+                          child: const Text("-", textScaleFactor: 2),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => setOperation("*"),
+                          child: const Text("x", textScaleFactor: 2),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => setOperation("/"),
+                          child: const Text("/", textScaleFactor: 2),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
     );
   }
 
+  void setOperation(String operation) {
+    _currentResult = "";
+    _currentTimerToDisplay = "10s";
+    _operation = "";
+    _result = "";
+    _progress = 100;
+    _currentTimer = 10;
+    _correctAnswers = 0;
+    _wrongAnswers = 0;
+    _operation = operation;
+    _generateQuestion();
+    Timer.periodic(const Duration(seconds: 1), (Timer t) {
+      if (_currentTimer == 0) {
+        t.cancel();
+      }
+      if (_currentTimer > 0) {
+        _currentTimer = _currentTimer - 1;
+      }
+      _progress = (_currentTimer / 10).toDouble();
+      _currentTimerToDisplay = (_currentTimer < 10 ? "0" : "").toString() +
+          _currentTimer.toString() +
+          "s";
+      setState(() {});
+    });
+  }
+
   ElevatedButton _getButton(int index) => ElevatedButton(
-        onPressed: () => _submitAnswer(_results[index].toString()),
-        child: Text(_results[index].toString()),
-      );
-
-  String _getRandomOperation() =>
-      _operations[Random().nextInt(_operations.length)];
-
-  List _calculateResults(_firstNum, _secondNum, _operation) {
-    List temp = [];
-    switch (_operation) {
-      case '+':
-        temp.add(_firstNum + _secondNum);
-        temp.add(_firstNum + _secondNum + 1);
-        temp.add(_firstNum + _secondNum + 2);
-        temp.add(_firstNum + _secondNum - 1);
-        return temp;
-      case '-':
-        temp.add(_firstNum - _secondNum);
-        temp.add(_firstNum - _secondNum + 1);
-        temp.add(_firstNum - _secondNum + 2);
-        temp.add(_firstNum - _secondNum - 1);
-        return temp;
-      case '*':
-        temp.add(_firstNum * _secondNum);
-        temp.add(_firstNum * _secondNum + 1);
-        temp.add(_firstNum * _secondNum + 2);
-        temp.add(_firstNum * _secondNum - 1);
-        return temp;
-      case '/':
-        temp.add((_firstNum / (_secondNum + 1)).toStringAsPrecision(3));
-        temp.add((_firstNum / (_secondNum + 2)).toStringAsPrecision(3));
-        temp.add((_firstNum / (_secondNum - 1)).toStringAsPrecision(3));
-        temp.add((_firstNum / _secondNum).toStringAsPrecision(3));
-        return temp;
-      default:
-        return temp;
-    }
-  }
-
-  String _calculateResult(_firstNum, _secondNum, _operation) {
-    switch (_operation) {
-      case '+':
-        return (_firstNum + _secondNum).toString();
-      case '-':
-        return (_firstNum - _secondNum).toString();
-      case '*':
-        return (_firstNum * _secondNum).toString();
-      case '/':
-        num x = _firstNum / _secondNum;
-        return x.toStringAsPrecision(3);
-      default:
-        return "0";
-    }
-  }
-
+      onPressed: () => _submitAnswer(_results[index].toString()),
+      child: Text(_results[index].toString(), textScaleFactor: 2));
   void _generateQuestion() {
-    _operation = _getRandomOperation();
-    if (_operation == '/' || _operation == '*') {
-      _firstNum = Random().nextInt(100) + 1;
-      _secondNum = Random().nextInt(25) + 1;
-      while (_secondNum > _firstNum) {
+    Random random = Random();
+    _results = [];
+    switch (_operation) {
+      case '+':
+        _firstNum = Random().nextInt(100) + 1;
+        _secondNum = Random().nextInt(100) + 1;
+        num total = _firstNum + _secondNum;
+        _result = total.toString();
+        _results.add(_result);
+        while (_results.length < 4) {
+          var randomNum = random.nextInt(3) + 1;
+          num newNum = 0;
+          if (randomNum.isEven) {
+            newNum = total + (randomNum * 10) as int;
+          } else {
+            newNum = total - (randomNum * 10) as int;
+          }
+          if (!_results.contains(newNum.toString()) &&
+              newNum
+                  .toString()
+                  .endsWith(total.toString()[total.toString().length - 1])) {
+            _results.add(newNum.toString());
+          }
+        }
+        break;
+      case '-':
+        _firstNum = Random().nextInt(100) + 1;
+        _secondNum = Random().nextInt(100) + 1;
+        num total = _firstNum - _secondNum;
+        _result = total.toString();
+        _results.add(_result);
+        while (_results.length < 4) {
+          var randomNum = random.nextInt(50) + 1;
+          num newNum = 0;
+          if (randomNum.isEven) {
+            newNum = total - randomNum as int;
+          } else {
+            newNum = total + randomNum as int;
+          }
+          if (!_results.contains(newNum.toString())) {
+            _results.add(newNum.toString());
+          }
+        }
+        break;
+      case '*':
         _firstNum = Random().nextInt(100) + 1;
         _secondNum = Random().nextInt(25) + 1;
-      }
-    } else {
-      _firstNum = Random().nextInt(100) + 1;
-      _secondNum = Random().nextInt(100) + 1;
+        num total = _firstNum * _secondNum;
+        _result = total.toString();
+        _results.add(_result);
+        while (_results.length < 4) {
+          var randomNum = random.nextInt(11);
+          num newNum = 0;
+          if (randomNum.isEven) {
+            newNum = total + randomNum + 1 as int;
+          } else {
+            newNum = total - randomNum + 1 as int;
+          }
+          if (!_results.contains(newNum.toString())) {
+            _results.add(newNum.toString());
+          }
+        }
+        break;
+      case '/':
+        _firstNum = Random().nextInt(100) + 1;
+        _secondNum = Random().nextInt(100) + 1;
+        num total = _firstNum / _secondNum;
+        _result = total.toStringAsFixed(1);
+        _results.add(_result);
+        while (_results.length < 4) {
+          var randomNum = random.nextInt(11);
+          num x = 0;
+          if (randomNum.isEven) {
+            x = total + randomNum + 1;
+          } else {
+            x = total - randomNum + 1;
+          }
+          if (!_results.contains(x.toStringAsFixed(1))) {
+            _results.add(x.toStringAsFixed(1));
+          }
+        }
+        break;
+      default:
+        _result = "0";
+        _results = ["0", "0", "0", "0"];
     }
-    _result = _calculateResult(_firstNum, _secondNum, _operation);
-    _results = _calculateResults(_firstNum, _secondNum, _operation);
     _results.shuffle();
     setState(() {});
   }
 
   void _submitAnswer(String option) {
-    if (!_isGo) return;
     if (option == _result) {
       _currentResult = "Correct!";
       _correctAnswers++;
