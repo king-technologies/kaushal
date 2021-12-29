@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:kaushal/values/colors.dart';
 import 'package:provider/provider.dart';
+
 import 'utils/shared_pref_util.dart';
 import 'utils/theme_util.dart';
 import 'values/strings.dart';
@@ -40,13 +42,15 @@ class _MyHomePageState extends State<MyHomePage> {
   double _progress = 100.0;
   int _correctAnswers = 0;
   int _wrongAnswers = 0;
-  int _currentTimer = 10;
+  int _currentTimer = 30;
   num _firstNum = 0;
   num _secondNum = 0;
   String _currentResult = "";
-  String _currentTimerToDisplay = "10s";
+  String _currentTimerToDisplay = "30s";
   String _operation = "";
   String _result = "";
+  late Timer _timer;
+
   @override
   void initState() {
     super.initState();
@@ -79,19 +83,16 @@ class _MyHomePageState extends State<MyHomePage> {
           ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 20),
                 if (_currentTimer > 0)
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.only(bottom: 36.0),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Container(
                           constraints: BoxConstraints(
                             maxWidth: mq.size.width * 0.15,
                             minWidth: mq.size.width * 0.15,
-                            minHeight: mq.size.width * 0.15,
-                            maxHeight: mq.size.width * 0.15,
                           ),
                           child: Stack(
                             alignment: Alignment.center,
@@ -128,7 +129,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         SizedBox(
                           width: mq.size.width * 0.15,
-                          height: mq.size.width * 0.15,
                         ),
                       ],
                     ),
@@ -141,8 +141,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _getButton(0),
-                            _getButton(1),
+                            _getButton(0, mq),
+                            _getButton(1, mq),
                           ],
                         ),
                       ),
@@ -151,126 +151,136 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _getButton(2),
-                            _getButton(3),
+                            _getButton(2, mq),
+                            _getButton(3, mq),
                           ],
                         ),
                       ),
                     ],
                   ),
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.symmetric(vertical: 20),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Text(
-                          _currentTimer > 0
-                              ? _currentResult
-                              : "Correct Answers: $_correctAnswers\n\nWrong Answers: $_wrongAnswers",
-                          textScaleFactor: 1,
-                          style: Theme.of(context).textTheme.headline4,
-                        ),
-                        if (_currentTimer == 0)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () => setOperation("+"),
-                                  child: const Text("+", textScaleFactor: 2),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () => setOperation("-"),
-                                  child: const Text("-", textScaleFactor: 2),
-                                ),
-                              ],
-                            ),
-                          ),
-                        if (_currentTimer == 0)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              ElevatedButton(
-                                onPressed: () => setOperation("*"),
-                                child: const Text("x", textScaleFactor: 2),
-                              ),
-                              ElevatedButton(
-                                onPressed: () => setOperation("/"),
-                                child: const Text("/", textScaleFactor: 2),
-                              ),
-                            ],
-                          ),
-                      ],
+                Column(
+                  children: [
+                    Padding(
+                      padding: _currentTimer > 0
+                          ? const EdgeInsets.only(top: 20)
+                          : const EdgeInsets.all(0),
+                      child: Text(
+                        _currentTimer > 0
+                            ? _currentResult
+                            : "Correct: $_correctAnswers\n\nWrong: $_wrongAnswers",
+                        textScaleFactor: 1,
+                        style: Theme.of(context).textTheme.headline4,
+                      ),
                     ),
-                  ),
+                    if (_currentTimer == 0) const SizedBox(height: 20),
+                    if (_currentTimer == 0)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () => setOperation("+"),
+                              child: const Text("+", textScaleFactor: 2),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => setOperation("-"),
+                              child: const Text("-", textScaleFactor: 2),
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (_currentTimer == 0)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () => setOperation("*"),
+                            child: const Text("x", textScaleFactor: 2),
+                          ),
+                          ElevatedButton(
+                            onPressed: () => setOperation("/"),
+                            child: const Text("/", textScaleFactor: 2),
+                          ),
+                        ],
+                      ),
+                  ],
                 ),
               ],
             )
-          : SizedBox(
-              width: double.infinity,
-              height: double.infinity,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SizedBox(
+                        width: mq.size.width * 0.15,
+                        child: ElevatedButton(
                           onPressed: () => setOperation("+"),
                           child: const Text("+", textScaleFactor: 2),
                         ),
-                        ElevatedButton(
+                      ),
+                      SizedBox(
+                        width: mq.size.width * 0.15,
+                        child: ElevatedButton(
                           onPressed: () => setOperation("-"),
                           child: const Text("-", textScaleFactor: 2),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SizedBox(
+                        width: mq.size.width * 0.15,
+                        child: ElevatedButton(
                           onPressed: () => setOperation("*"),
                           child: const Text("x", textScaleFactor: 2),
                         ),
-                        ElevatedButton(
+                      ),
+                      SizedBox(
+                        width: mq.size.width * 0.15,
+                        child: ElevatedButton(
                           onPressed: () => setOperation("/"),
                           child: const Text("/", textScaleFactor: 2),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
     );
   }
 
   void setOperation(String operation) {
     _currentResult = "";
-    _currentTimerToDisplay = "10s";
+    _currentTimerToDisplay = "30s";
     _operation = "";
     _result = "";
     _progress = 100;
-    _currentTimer = 10;
+    _currentTimer = 30;
     _correctAnswers = 0;
     _wrongAnswers = 0;
     _operation = operation;
     _generateQuestion();
-    Timer.periodic(const Duration(seconds: 1), (Timer t) {
-      if (_currentTimer == 0) {
-        t.cancel();
-      }
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
       if (_currentTimer > 0) {
         _currentTimer = _currentTimer - 1;
       }
-      _progress = (_currentTimer / 10).toDouble();
+      if (_currentTimer <= 0) {
+        t.cancel();
+        _timer.cancel();
+      }
+      _progress = (_currentTimer / 30).toDouble();
       _currentTimerToDisplay = (_currentTimer < 10 ? "0" : "").toString() +
           _currentTimer.toString() +
           "s";
@@ -278,31 +288,29 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  ElevatedButton _getButton(int index) => ElevatedButton(
-      onPressed: () => _submitAnswer(_results[index].toString()),
-      child: Text(_results[index].toString(), textScaleFactor: 2));
+  Widget _getButton(int index, MediaQueryData mq) => SizedBox(
+        width: mq.size.width * 0.26,
+        child: ElevatedButton(
+            onPressed: () => _submitAnswer(_results[index].toString()),
+            child: Text(_results[index].toString(), textScaleFactor: 2)),
+      );
+
   void _generateQuestion() {
     Random random = Random();
     _results = [];
     switch (_operation) {
       case '+':
-        _firstNum = Random().nextInt(100) + 1;
+        _firstNum = Random().nextInt(100) + 10;
         _secondNum = Random().nextInt(100) + 1;
         num total = _firstNum + _secondNum;
         _result = total.toString();
         _results.add(_result);
         while (_results.length < 4) {
-          var randomNum = random.nextInt(3) + 1;
+          var randomNum = (random.nextInt(4) + 1) * 10;
           num newNum = 0;
-          if (randomNum.isEven) {
-            newNum = total + (randomNum * 10) as int;
-          } else {
-            newNum = total - (randomNum * 10) as int;
-          }
+          newNum = randomNum.isEven ? total + randomNum : total - randomNum;
           if (!_results.contains(newNum.toString()) &&
-              newNum
-                  .toString()
-                  .endsWith(total.toString()[total.toString().length - 1])) {
+              newNum.toString().endsWith(_result[_result.length - 1])) {
             _results.add(newNum.toString());
           }
         }
@@ -316,11 +324,7 @@ class _MyHomePageState extends State<MyHomePage> {
         while (_results.length < 4) {
           var randomNum = random.nextInt(50) + 1;
           num newNum = 0;
-          if (randomNum.isEven) {
-            newNum = total - randomNum as int;
-          } else {
-            newNum = total + randomNum as int;
-          }
+          newNum = randomNum.isEven ? total - randomNum : total + randomNum;
           if (!_results.contains(newNum.toString())) {
             _results.add(newNum.toString());
           }
@@ -333,13 +337,9 @@ class _MyHomePageState extends State<MyHomePage> {
         _result = total.toString();
         _results.add(_result);
         while (_results.length < 4) {
-          var randomNum = random.nextInt(11);
+          var randomNum = random.nextInt(11) + 1;
           num newNum = 0;
-          if (randomNum.isEven) {
-            newNum = total + randomNum + 1 as int;
-          } else {
-            newNum = total - randomNum + 1 as int;
-          }
+          newNum = randomNum.isEven ? total + randomNum : total - randomNum;
           if (!_results.contains(newNum.toString())) {
             _results.add(newNum.toString());
           }
@@ -347,20 +347,16 @@ class _MyHomePageState extends State<MyHomePage> {
         break;
       case '/':
         _firstNum = Random().nextInt(100) + 1;
-        _secondNum = Random().nextInt(100) + 1;
+        _secondNum = Random().nextInt(25) + 1;
         num total = _firstNum / _secondNum;
         _result = total.toStringAsFixed(1);
         _results.add(_result);
         while (_results.length < 4) {
-          var randomNum = random.nextInt(11);
-          num x = 0;
-          if (randomNum.isEven) {
-            x = total + randomNum + 1;
-          } else {
-            x = total - randomNum + 1;
-          }
-          if (!_results.contains(x.toStringAsFixed(1))) {
-            _results.add(x.toStringAsFixed(1));
+          var randomNum = random.nextInt(11) + 1;
+          num newNum = 0;
+          newNum = randomNum.isEven ? total + randomNum : total - randomNum;
+          if (!_results.contains(newNum.toStringAsFixed(1))) {
+            _results.add(newNum.toStringAsFixed(1));
           }
         }
         break;
