@@ -39,7 +39,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List _results = ["0", "0", "0", "0"];
-  double _progress = 100.0;
+  double _progress = 100;
   int _correctAnswers = 0;
   int _wrongAnswers = 0;
   int _currentTimer = 30;
