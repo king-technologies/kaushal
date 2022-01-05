@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:kaushal/utils/router.dart';
 import 'package:kaushal/values/colors.dart';
 import 'package:provider/provider.dart';
 
@@ -9,27 +10,22 @@ import 'utils/shared_pref_util.dart';
 import 'utils/theme_util.dart';
 import 'values/strings.dart';
 
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => ThemeUtils(),
-      builder: (context, _) {
-        final themeUtils = Provider.of<ThemeUtils>(context);
-        return MaterialApp(
-          title: appName,
-          themeMode: themeUtils.themeMode,
-          theme: MyThemes.lightTheme,
-          darkTheme: MyThemes.darkTheme,
-          home: const MyHomePage(),
-        );
-      },
+void main() => runApp(
+      ChangeNotifierProvider(
+        create: (context) => ThemeUtils(),
+        builder: (context, _) {
+          final themeUtils = Provider.of<ThemeUtils>(context);
+          return MaterialApp(
+            title: appName,
+            themeMode: themeUtils.themeMode,
+            theme: MyThemes.lightTheme,
+            darkTheme: MyThemes.darkTheme,
+            onGenerateRoute: RouteGenerator.generateRoute,
+            home: const MyHomePage(),
+          );
+        },
+      ),
     );
-  }
-}
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -78,6 +74,33 @@ class _MyHomePageState extends State<MyHomePage> {
                 : Icons.dark_mode),
           ),
         ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            ListTile(
+              title: const Text("Addition & Subtraction"),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, addSub);
+              },
+            ),
+            ListTile(
+              title: const Text("Settings"),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, settings);
+              },
+            ),
+            ListTile(
+              title: const Text("About"),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, about);
+              },
+            ),
+          ],
+        ),
       ),
       body: _operation != ""
           ? Column(
@@ -288,7 +311,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Widget _getButton(int index, MediaQueryData mq) => SizedBox(
+  SizedBox _getButton(int index, MediaQueryData mq) => SizedBox(
         width: mq.size.width * 0.26,
         child: ElevatedButton(
             onPressed: () => _submitAnswer(_results[index].toString()),

@@ -44,8 +44,9 @@ class MyThemes {
       overlayColor: MaterialStateProperty.all(Colors.white.withOpacity(0.1)),
     ),
     textTheme: TextTheme(
-      headline6: TextStyle(fontSize: 24, color: kPrimaryColor),
       headline4: const TextStyle(fontSize: 20, color: Colors.white),
+      headline6: TextStyle(fontSize: 24, color: kPrimaryColor),
+      headline5: const TextStyle(fontSize: 44, color: Colors.white),
       subtitle1: const TextStyle(fontSize: 14, color: Colors.white),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -93,6 +94,7 @@ class MyThemes {
     textTheme: TextTheme(
       headline6: const TextStyle(fontSize: 24, color: Colors.white),
       headline4: TextStyle(fontSize: 20, color: kPrimaryColor),
+      headline5: TextStyle(fontSize: 44, color: kPrimaryColor),
       subtitle1: TextStyle(fontSize: 14, color: kPrimaryColor),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -100,6 +102,7 @@ class MyThemes {
           shape: MaterialStateProperty.all(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(0.0))),
           shadowColor: MaterialStateProperty.all(kPrimaryColor),
+          elevation: MaterialStateProperty.all(1),
           overlayColor:
               MaterialStateProperty.all(Colors.black.withOpacity(0.2)),
           foregroundColor: MaterialStateProperty.all(Colors.black),
