@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../arithmetic/addition-subtraction.dart';
+import '../arithmetic/addition_subtraction.dart';
 import '../values/strings.dart';
 
 class RouteGenerator {
