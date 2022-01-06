@@ -1,14 +1,13 @@
-import 'dart:async';
-import 'dart:math';
+import "dart:async";
+import "dart:math";
 
-import 'package:flutter/material.dart';
-import 'package:kaushal/utils/router.dart';
-import 'package:kaushal/values/colors.dart';
-import 'package:provider/provider.dart';
+import "package:flutter/material.dart";
+import "package:kaushal/utils/router.dart";
+import "package:provider/provider.dart";
 
-import 'utils/shared_pref_util.dart';
-import 'utils/theme_util.dart';
-import 'values/strings.dart';
+import "utils/shared_pref_util.dart";
+import "utils/theme_util.dart";
+import "values/strings.dart";
 
 void main() => runApp(
       ChangeNotifierProvider(
@@ -86,6 +85,13 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             ListTile(
+              title: const Text("Multiplication & Division"),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, mulDiv);
+              },
+            ),
+            ListTile(
               title: const Text("Settings"),
               onTap: () {
                 Navigator.pop(context);
@@ -133,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   valueColor: AlwaysStoppedAnimation<Color>(
                                       themeUtils.themeMode == ThemeMode.dark
                                           ? Colors.white
-                                          : kPrimaryColor),
+                                          : Colors.black),
                                 ),
                               ),
                             ],
@@ -143,10 +149,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 5),
                           color: themeUtils.themeMode != ThemeMode.dark
-                              ? kPrimaryColor
+                              ? Colors.black
                               : Colors.white,
                           child: Text(
-                            '$_firstNum $_operation $_secondNum',
+                            "$_firstNum $_operation $_secondNum",
                             style: Theme.of(context).textTheme.headline6,
                           ),
                         ),
@@ -204,11 +210,17 @@ class _MyHomePageState extends State<MyHomePage> {
                           children: [
                             ElevatedButton(
                               onPressed: () => setOperation("+"),
-                              child: const Text("+", textScaleFactor: 2),
+                              child: Text(
+                                "+",
+                                style: Theme.of(context).textTheme.headline6,
+                              ),
                             ),
                             ElevatedButton(
                               onPressed: () => setOperation("-"),
-                              child: const Text("-", textScaleFactor: 2),
+                              child: Text(
+                                "-",
+                                style: Theme.of(context).textTheme.headline6,
+                              ),
                             ),
                           ],
                         ),
@@ -219,11 +231,17 @@ class _MyHomePageState extends State<MyHomePage> {
                         children: [
                           ElevatedButton(
                             onPressed: () => setOperation("*"),
-                            child: const Text("x", textScaleFactor: 2),
+                            child: Text(
+                              "x",
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
                           ),
                           ElevatedButton(
-                            onPressed: () => setOperation("/"),
-                            child: const Text("/", textScaleFactor: 2),
+                            onPressed: () => setOperation("÷"),
+                            child: Text(
+                              "÷",
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
                           ),
                         ],
                       ),
@@ -243,14 +261,20 @@ class _MyHomePageState extends State<MyHomePage> {
                         width: mq.size.width * 0.15,
                         child: ElevatedButton(
                           onPressed: () => setOperation("+"),
-                          child: const Text("+", textScaleFactor: 2),
+                          child: Text(
+                            "+",
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
                         ),
                       ),
                       SizedBox(
                         width: mq.size.width * 0.15,
                         child: ElevatedButton(
                           onPressed: () => setOperation("-"),
-                          child: const Text("-", textScaleFactor: 2),
+                          child: Text(
+                            "-",
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
                         ),
                       ),
                     ],
@@ -265,14 +289,20 @@ class _MyHomePageState extends State<MyHomePage> {
                         width: mq.size.width * 0.15,
                         child: ElevatedButton(
                           onPressed: () => setOperation("*"),
-                          child: const Text("x", textScaleFactor: 2),
+                          child: Text(
+                            "x",
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
                         ),
                       ),
                       SizedBox(
                         width: mq.size.width * 0.15,
                         child: ElevatedButton(
-                          onPressed: () => setOperation("/"),
-                          child: const Text("/", textScaleFactor: 2),
+                          onPressed: () => setOperation("÷"),
+                          child: Text(
+                            "÷",
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
                         ),
                       ),
                     ],
@@ -315,14 +345,17 @@ class _MyHomePageState extends State<MyHomePage> {
         width: mq.size.width * 0.26,
         child: ElevatedButton(
             onPressed: () => _submitAnswer(_results[index].toString()),
-            child: Text(_results[index].toString(), textScaleFactor: 2)),
+            child: Text(
+              _results[index].toString(),
+              style: Theme.of(context).textTheme.headline6,
+            )),
       );
 
   void _generateQuestion() {
     Random random = Random();
     _results = [];
     switch (_operation) {
-      case '+':
+      case "+":
         _firstNum = Random().nextInt(100) + 10;
         _secondNum = Random().nextInt(100) + 1;
         num total = _firstNum + _secondNum;
@@ -338,7 +371,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         }
         break;
-      case '-':
+      case "-":
         _firstNum = Random().nextInt(100) + 1;
         _secondNum = Random().nextInt(100) + 1;
         num total = _firstNum - _secondNum;
@@ -353,7 +386,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         }
         break;
-      case '*':
+      case "*":
         _firstNum = Random().nextInt(100) + 1;
         _secondNum = Random().nextInt(25) + 1;
         num total = _firstNum * _secondNum;
@@ -368,7 +401,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         }
         break;
-      case '/':
+      case "÷":
         _firstNum = Random().nextInt(100) + 1;
         _secondNum = Random().nextInt(25) + 1;
         num total = _firstNum / _secondNum;

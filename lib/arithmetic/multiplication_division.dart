@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 
 import '../widgets/keypad.dart';
 
-class AdditionSubtraction extends StatefulWidget {
-  const AdditionSubtraction({Key? key}) : super(key: key);
+class MultiplicationDivision extends StatefulWidget {
+  const MultiplicationDivision({Key? key}) : super(key: key);
 
   @override
-  _AdditionSubtractionState createState() => _AdditionSubtractionState();
+  _MultiplicationDivisionState createState() => _MultiplicationDivisionState();
 }
 
-class _AdditionSubtractionState extends State<AdditionSubtraction> {
+class _MultiplicationDivisionState extends State<MultiplicationDivision> {
   String _currentNum = "";
   String _currentAnswer = "";
   String _currentQuestion = "";
@@ -20,17 +20,24 @@ class _AdditionSubtractionState extends State<AdditionSubtraction> {
     int num1 = Random().nextInt(10);
     int num2 = Random().nextInt(10);
     final operator = Random().nextInt(2);
-    if (operator != 0) {
-      while (num2 > num1) {
+
+    if (operator == 0) {
+      while (num2 == 0 || num1 == 0) {
         num2 = Random().nextInt(10);
         num1 = Random().nextInt(10);
       }
+      _currentQuestion = "$num1 x $num2";
+      _currentAnswer = (num1 * num2).toString();
+    } else {
+      while (num1 < num2 || num2 == 0) {
+        num1 = Random().nextInt(10);
+        num2 = Random().nextInt(10);
+      }
+      _currentQuestion = "${num1 * num2} ÷ $num1";
+      _currentAnswer = (num2).toString();
     }
     setState(() {
       _currentNum = "";
-      _currentAnswer = (operator == 0 ? num1 + num2 : num1 - num2).toString();
-      _currentQuestion =
-          num1.toString() + (operator == 0 ? " + " : " - ") + num2.toString();
     });
   }
 
