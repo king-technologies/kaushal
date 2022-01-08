@@ -43,20 +43,23 @@ class Keypad extends StatelessWidget {
             );
           } else if (e != "Clear") {
             return ElevatedButton(
-                style: Theme.of(context).elevatedButtonTheme.style?.copyWith(
-                      overlayColor: MaterialStateProperty.all(
-                          Colors.black.withOpacity(0.0)),
+              style: Theme.of(context).elevatedButtonTheme.style?.copyWith(
+                    overlayColor: MaterialStateProperty.all(
+                      Colors.black.withOpacity(0.0),
                     ),
-                onPressed: () => onTextInput(e),
-                child: Text(
-                  e,
-                  style: Theme.of(context).textTheme.headline6,
-                ));
+                  ),
+              onPressed: () => onTextInput(e),
+              child: Text(
+                e,
+                style: Theme.of(context).textTheme.headline6,
+              ),
+            );
           } else {
             return ElevatedButton(
               style: Theme.of(context).elevatedButtonTheme.style?.copyWith(
                     overlayColor: MaterialStateProperty.all(
-                        Colors.black.withOpacity(0.0)),
+                      Colors.black.withOpacity(0.0),
+                    ),
                   ),
               onPressed: onBackspace,
               child: Icon(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../arithmetic/addition_subtraction.dart';
-import '../arithmetic/multiplication_division.dart';
+import '../screen/one_focus.dart';
+import '../screen/arithmetic.dart';
 import '../values/strings.dart';
 
 class RouteGenerator {
@@ -10,13 +10,15 @@ class RouteGenerator {
     if (settings.arguments != null) {
       args = settings.arguments;
     }
-    debugPrint(args);
     switch (settings.name) {
       case addSub:
-        return MaterialPageRoute(builder: (_) => const AdditionSubtraction());
+        return MaterialPageRoute(
+            builder: (_) => const Arithmetic(isAddition: true));
       case mulDiv:
         return MaterialPageRoute(
-            builder: (_) => const MultiplicationDivision());
+            builder: (_) => const Arithmetic(isAddition: false));
+      case oneFocus:
+        return MaterialPageRoute(builder: (_) => const OneFocus());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

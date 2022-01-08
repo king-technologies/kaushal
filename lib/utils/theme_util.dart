@@ -69,9 +69,7 @@ class MyThemes {
         ),
         elevation: MaterialStateProperty.all(1),
         shadowColor: MaterialStateProperty.all(Colors.white),
-        overlayColor: MaterialStateProperty.all(
-          Colors.grey.shade800.withOpacity(0.3),
-        ),
+
         // foregroundColor: MaterialStateProperty.all(Colors.black),
         backgroundColor: MaterialStateProperty.all(Colors.white),
         padding: MaterialStateProperty.all(
@@ -126,9 +124,6 @@ class MyThemes {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(0.0))),
           shadowColor: MaterialStateProperty.all(Colors.black),
           elevation: MaterialStateProperty.all(1),
-          overlayColor:
-              MaterialStateProperty.all(Colors.black.withOpacity(0.2)),
-          // foregroundColor: MaterialStateProperty.all(Colors.black),
           backgroundColor: MaterialStateProperty.all(Colors.black),
           padding: MaterialStateProperty.all(
               const EdgeInsets.symmetric(vertical: 10, horizontal: 15))),
