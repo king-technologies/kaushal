@@ -10,6 +10,7 @@ class RouteGenerator {
     if (settings.arguments != null) {
       args = settings.arguments;
     }
+    debugPrint(args);
     switch (settings.name) {
       case addSub:
         return MaterialPageRoute(
