@@ -7,22 +7,28 @@ import "utils/theme_util.dart";
 import "values/strings.dart";
 
 void main() => runApp(
-      ChangeNotifierProvider(
-        create: (context) => ThemeUtils(),
-        builder: (context, _) {
-          final themeUtils = Provider.of<ThemeUtils>(context);
-          SharedPref.getTheme().then((value) =>
-              Provider.of<ThemeUtils>(context, listen: false)
-                  .toggleTheme(value == 1));
-          return MaterialApp(
-            title: appName,
-            themeMode: themeUtils.themeMode,
-            theme: MyThemes.lightTheme,
-            darkTheme: MyThemes.darkTheme,
-            onGenerateRoute: RouteGenerator.generateRoute,
-            home: const MyHome(),
-          );
+      NotificationListener<OverscrollIndicatorNotification>(
+        onNotification: (OverscrollIndicatorNotification overscroll) {
+          overscroll.disallowIndicator();
+          return false;
         },
+        child: ChangeNotifierProvider(
+          create: (context) => ThemeUtils(),
+          builder: (context, _) {
+            final themeUtils = Provider.of<ThemeUtils>(context);
+            SharedPref.getTheme().then((value) =>
+                Provider.of<ThemeUtils>(context, listen: false)
+                    .toggleTheme(value == 1));
+            return MaterialApp(
+              title: appName,
+              themeMode: themeUtils.themeMode,
+              theme: MyThemes.lightTheme,
+              darkTheme: MyThemes.darkTheme,
+              onGenerateRoute: RouteGenerator.generateRoute,
+              home: const MyHome(),
+            );
+          },
+        ),
       ),
     );
 
@@ -44,22 +50,9 @@ class _MyHomeState extends State<MyHome> {
 
   @override
   Widget build(BuildContext context) {
-    final themeUtils = Provider.of<ThemeUtils>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text(appName),
-        actions: [
-          IconButton(
-            onPressed: () {
-              themeUtils.themeMode == ThemeMode.dark
-                  ? themeUtils.toggleTheme(false)
-                  : themeUtils.toggleTheme(true);
-            },
-            icon: Icon(themeUtils.themeMode == ThemeMode.dark
-                ? Icons.light_mode
-                : Icons.dark_mode),
-          ),
-        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -89,7 +82,7 @@ class _MyHomeState extends State<MyHome> {
               title: const Text("Settings"),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, settings);
+                Navigator.pushNamed(context, settingsRoute);
               },
             ),
             ListTile(
