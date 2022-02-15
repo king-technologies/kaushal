@@ -7,7 +7,7 @@ class ThemeUtils extends ChangeNotifier {
   ThemeMode themeMode = ThemeMode.system;
   bool get isDarkMode {
     if (themeMode == ThemeMode.system) {
-      final brightness = SchedulerBinding.instance?.window.platformBrightness;
+      final brightness = SchedulerBinding.instance.window.platformBrightness;
       return brightness == Brightness.dark;
     } else {
       return themeMode == ThemeMode.dark;
