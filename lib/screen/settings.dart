@@ -94,7 +94,7 @@ class _SettingsState extends State<Settings> {
                     title: const Text("Dark Mode"),
                     onTap: () => Navigator.pushNamed(context, "/profile"),
                     trailing: Switch(
-                      value: themeUtils.themeMode == ThemeMode.dark,
+                      value: themeUtils.isDarkMode,
                       onChanged: (value) => themeUtils.toggleTheme(value),
                     ),
                   ),
